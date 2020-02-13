@@ -3,10 +3,14 @@ const dotenv = require('dotenv');
 const chalk = require('chalk');
 const morgan = require('morgan');
 const logger = require('./src/middlewares/logger');
-
+const mongoose = require('mongoose');
 dotenv.config();
 const port = process.env.PORT || 5000;
 const env = process.env.NODE_ENV || 'production';
+
+mongoose.connect('mongodb://localhost/innovacion', {
+  useNewUrlParser: true, useUnifiedTopology: true
+});
 
 const app = express();
 app.use(express.json());
