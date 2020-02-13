@@ -1,7 +1,7 @@
 const { Schema, model } = require('mongoose');
 
 const Event = model('Event', new Schema({
-  name: String
+	name: String
 }));
 
 module.exports = Event;
