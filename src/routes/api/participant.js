@@ -10,4 +10,6 @@ router.put('/', ParticipantController.update);
 router.delete('/:id', ParticipantController.remove);
 router.post('/filter', ParticipantController.filter);
 
+router.post('/:id/event', ParticipantController.addEvents);
+
 module.exports = router;

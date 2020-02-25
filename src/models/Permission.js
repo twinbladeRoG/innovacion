@@ -1,7 +1,7 @@
 const { Schema, model } = require('mongoose');
 
 const Permission = model('Permission', new Schema({
-	name: String
-}));
+	name: { type: String, require: true }
+}, { timestamps: true }));
 
 module.exports = Permission;

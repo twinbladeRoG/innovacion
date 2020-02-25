@@ -3,17 +3,21 @@ const Participant = require('../models/Participant');
 
 const ParticipantController = {
 	/**
-   * @url /api/participants
+   * @url /api/participant
    * @method GET
    * @description Get all Participants
    */
 	getAll: async (req, res) => {
-		const participants = await Participant.find();
-		return res.json(participants);
+		try {
+			const participants = await Participant.find().populate('events');
+			return res.json(participants);
+		} catch (e) {
+			return res.status(500).json({ message: 'DB Error', e});
+		}
 	},
 
 	/**
-   * @url /api/participants/:id
+   * @url /api/participant/:id
    * @method GET
    * @description Get a Participant by Id
    */
@@ -31,7 +35,7 @@ const ParticipantController = {
 	/**
    * @url /api/participants
    * @method POST
-   * @description
+   * @description Create a Particpant
    */
 	create: async (req, res) => {
 		const { first_name, last_name, contact, email, institute } = req.body;
@@ -42,10 +46,10 @@ const ParticipantController = {
 			if (exists) {
 				return res.status(400).json({ message: 'Participant with same email already exists!'});
 			} else {
-				const participant = await Participant({
+				const participant = new Participant({
 					first_name, last_name, contact, email, institute
 				});
-				participant.save();
+				await participant.save();
 				return res.json(participant);
 			}
 		} catch (e) {
@@ -54,9 +58,9 @@ const ParticipantController = {
 	},
 
 	/**
-   * @url /api/participants
+   * @url /api/participant
    * @method PUT
-   * @description
+   * @description Update a Participant by Id
    */
 	update: async (req, res) => {
 		const updates = {};
@@ -77,9 +81,9 @@ const ParticipantController = {
 	},
 
 	/**
-   * @url /api/participants/filter
+   * @url /api/participant/filter
    * @method POST
-   * @description Filter out Participants based on search parameters
+   * @description Delete a Partcipant by Id
    */
 	remove: async (req, res) => {
 		const { id } = req.params;
@@ -99,7 +103,7 @@ const ParticipantController = {
 	},
 
 	/**
-   * @url /api/participants/filter
+   * @url /api/participant/filter
    * @method POST
    * @description Filter out Participants based on search parameters
    */
@@ -119,6 +123,28 @@ const ParticipantController = {
 			res.status(500).json({ message: 'DB Error', e});
 		}
 	},
+
+	/**
+   * @url /api/participant/:id/event
+   * @method POST
+   * @description
+   */
+	addEvents: async (req, res) => {
+		const { events } = req.body;
+		const { id } = req.params;
+
+		try {
+			const participant = await Participant.findById(id);
+			events.forEach(event => {
+				participant.events.push(event);
+			});
+			await participant.save();
+
+			return res.json(participant.events);
+		} catch (e) {
+			return res.status(400).json({ message: 'DB Error', e});
+		}
+	}
 };
 
 module.exports = ParticipantController;
