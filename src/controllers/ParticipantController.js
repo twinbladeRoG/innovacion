@@ -25,7 +25,7 @@ const ParticipantController = {
 		const { id } = req.params;
 
 		try {
-			const participants = await Participant.find({ _id: id});
+			const participants = await Participant.findById(id);
 			return res.json(participants);
 		} catch (e) {
 			return res.status(500).json({ message: 'DB Error', e});
@@ -81,8 +81,8 @@ const ParticipantController = {
 	},
 
 	/**
-   * @url /api/participant/filter
-   * @method POST
+   * @url /api/participant/:id
+   * @method DELETE
    * @description Delete a Partcipant by Id
    */
 	remove: async (req, res) => {
@@ -127,7 +127,7 @@ const ParticipantController = {
 	/**
    * @url /api/participant/:id/event
    * @method POST
-   * @description
+   * @description Add Events to a Participant
    */
 	addEvents: async (req, res) => {
 		const { events } = req.body;

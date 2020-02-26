@@ -35,7 +35,7 @@ const EventController = {
 	/**
    * @url /api/events
    * @method POST
-   * @description Create a Particpant
+   * @description Create a Event
    */
 	create: async (req, res) => {
 		const { name, description } = req.body;
@@ -46,8 +46,8 @@ const EventController = {
 			if (exists) {
 				return res.status(400).json({ message: 'Event with same name already exists!'});
 			} else {
-				const event = await Event({ name, description });
-				event.save();
+				const event = new Event({ name, description });
+				await event.save();
 				log.info(`New event ${name} added`);
 				return res.json(event);
 			}
@@ -63,11 +63,8 @@ const EventController = {
    */
 	update: async (req, res) => {
 		const updates = {};
-		if ('first_name' in req.body) updates.first_name = req.body.first_name;
-		if ('last_name' in req.body) updates.last_name = req.body.last_name;
-		if ('contact' in req.body) updates.contact = req.body.contact;
-		if ('email' in req.body) updates.email = req.body.email;
-		if ('institute' in req.body) updates.institute = req.body.institute;
+		if ('name' in req.body) updates.name = req.body.name;
+		if ('description' in req.body) updates.description = req.body.description;
 
 		const id = req.body._id;
 
@@ -80,9 +77,9 @@ const EventController = {
 	},
 
 	/**
-   * @url /api/events/filter
-   * @method POST
-   * @description Delete a Partcipant by Id
+   * @url /api/events/:id
+   * @method DELETE
+   * @description Delete a Event by Id
    */
 	remove: async (req, res) => {
 		const { id } = req.params;
@@ -94,7 +91,7 @@ const EventController = {
 				const deleted = await Event.deleteOne({ _id: id });
 				return res.json(deleted);
 			} else {
-				return res.status(400).json({ message: 'No such participant exists' });
+				return res.status(400).json({ message: 'No such event exists' });
 			}
 		} catch (e) {
 			return res.status(400).json({ message: 'DB Error', e});
