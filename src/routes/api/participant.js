@@ -3,6 +3,9 @@ const router = express.Router();
 
 const { ParticipantController } = require('../../controllers');
 
+/**
+ * @url /api/participant
+ */
 router.get('/', ParticipantController.getAll);
 router.get('/:id', ParticipantController.getById);
 router.post('/', ParticipantController.create);

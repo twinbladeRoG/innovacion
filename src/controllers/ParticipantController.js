@@ -14,7 +14,7 @@ const ParticipantController = {
 			const participants = await Participant.find();
 			return res.json(participants);
 		} catch (e) {
-			return res.status(500).json({ message: 'DB Error', e});
+			return res.status(500).json({ message: 'DB Error', e });
 		}
 	},
 
@@ -30,7 +30,7 @@ const ParticipantController = {
 			const participants = await Participant.findById(id);
 			return res.json(participants);
 		} catch (e) {
-			return res.status(500).json({ message: 'DB Error', e});
+			return res.status(500).json({ message: 'DB Error', e });
 		}
 	},
 
@@ -55,7 +55,7 @@ const ParticipantController = {
 				return res.json(participant);
 			}
 		} catch (e) {
-			return res.status(500).json({ message: 'DB Error', e});
+			return res.status(500).json({ message: 'DB Error', e });
 		}
 	},
 
@@ -80,7 +80,7 @@ const ParticipantController = {
 				return res.json(participant);
 			return res.status(404).json({ message: 'No such participant exists'});
 		} catch (e) {
-			return res.status(400).json({ message: 'DB Error', e});
+			return res.status(400).json({ message: 'DB Error', e });
 		}
 	},
 
@@ -98,7 +98,7 @@ const ParticipantController = {
 				return res.json(participant);
 			return res.status(404).json({ message: 'No such participant exists' });
 		} catch (e) {
-			return res.status(400).json({ message: 'DB Error', e});
+			return res.status(400).json({ message: 'DB Error', e });
 		}
 	},
 
@@ -120,7 +120,7 @@ const ParticipantController = {
 			log.info(`${participants.length} found!`);
 			return res.json(participants);
 		} catch (e) {
-			res.status(500).json({ message: 'DB Error', e});
+			res.status(500).json({ message: 'DB Error', e });
 		}
 	},
 
@@ -147,7 +147,7 @@ const ParticipantController = {
 				await Event.find({ _id: { $in: participant.events }})
 			);
 		} catch (e) {
-			return res.status(400).json({ message: 'DB Error', e});
+			return res.status(400).json({ message: 'DB Error', e });
 		}
 	},
 
@@ -166,7 +166,7 @@ const ParticipantController = {
 
 			res.json(participant.events);
 		} catch (e) {
-			return res.status(400).json({ message: 'DB Error', e});
+			return res.status(400).json({ message: 'DB Error', e });
 		}
 	},
 
@@ -193,7 +193,7 @@ const ParticipantController = {
 			await participant.save();
 			res.json(removedEvents);
 		} catch (e) {
-			return res.status(400).json({ message: 'DB Error', e});
+			return res.status(400).json({ message: 'DB Error', e });
 		}
 	},
 
@@ -209,7 +209,7 @@ const ParticipantController = {
 		try {
 			const participant = await Participant.findById(id, { groups: 1 });
 			if (!participant)
-				return res.status(404).json({ message: 'No such participant exists'});
+				return res.status(404).json({ message: 'No such participant exists' });
 
 			groups.forEach(group => {
 				if (!participant.groups.includes(group))
@@ -220,7 +220,7 @@ const ParticipantController = {
 				await Group.find({ _id: { $in: participant.groups }})
 			);
 		} catch (e) {
-			return res.status(400).json({ message: 'DB Error', e});
+			return res.status(400).json({ message: 'DB Error', e });
 		}
 	},
 
@@ -235,11 +235,11 @@ const ParticipantController = {
 		try {
 			const participant = await Participant.findById(id, { groups: 1 }).populate('groups');
 			if (!participant)
-				return res.status(404).json({ message: 'No such participant exists'});
+				return res.status(404).json({ message: 'No such participant exists' });
 
 			res.json(participant.groups);
 		} catch (e) {
-			return res.status(400).json({ message: 'DB Error', e});
+			return res.status(400).json({ message: 'DB Error', e });
 		}
 	},
 
@@ -256,7 +256,7 @@ const ParticipantController = {
 		try {
 			const participant = await Participant.findById(id, { groups: 1 });
 			if (!participant)
-				return res.status(404).json({ message: 'No such participant exists'});
+				return res.status(404).json({ message: 'No such participant exists' });
 
 			let removedGroups = [];
 			groups.forEach(group => {
@@ -266,7 +266,7 @@ const ParticipantController = {
 			await participant.save();
 			res.json(removedGroups);
 		} catch (e) {
-			return res.status(400).json({ message: 'DB Error', e});
+			return res.status(400).json({ message: 'DB Error', e });
 		}
 	}
 };
