@@ -1,5 +1,6 @@
 const log = require('../middlewares/logger');
 const Participant = require('../models/Participant');
+const { ObjectId } = require('mongoose').Types;
 
 const ParticipantController = {
 	/**
@@ -9,7 +10,7 @@ const ParticipantController = {
    */
 	getAll: async (req, res) => {
 		try {
-			const participants = await Participant.find().populate('events');
+			const participants = await Participant.find();
 			return res.json(participants);
 		} catch (e) {
 			return res.status(500).json({ message: 'DB Error', e});
@@ -132,13 +133,53 @@ const ParticipantController = {
 		const { id } = req.params;
 
 		try {
-			const participant = await Participant.findById(id);
+			const participant = await Participant.findById(id, { events: 1 });
 			events.forEach(event => {
-				participant.events.push(event);
+				if (!participant.events.includes(event))
+					participant.events.push(event);
 			});
 			await participant.save();
-
 			return res.json(participant.events);
+		} catch (e) {
+			return res.status(400).json({ message: 'DB Error', e});
+		}
+	},
+
+	/**
+   * @url /api/participant/:id/event
+   * @method GET
+   * @description Get Events of a Participant
+   */
+	getEvents: async (req, res) => {
+		const { id } = req.params;
+
+		try {
+			const participants = await Participant.findById(id, { events: 1 }).populate('events');
+			res.json(participants.events);
+		} catch (e) {
+			return res.status(400).json({ message: 'DB Error', e});
+		}
+	},
+
+	/**
+	 * @url /api/participant/:id/event
+	 * @method PUT
+	 * @description Remove Events of a Participants
+	 */
+	removeEvents: async (req, res) => {
+		const { id } = req.params;
+		let { events } = req.body;
+		// events = events.map(event => ObjectId(event));
+
+		try {
+			const participant = await Participant.findById(id, { events: 1 });
+			let removedEvents = [];
+			events.forEach(event => {
+				if (participant.events.includes(event))
+					removedEvents.push(...participant.events.splice(participant.events.indexOf(event), 1));
+			});
+			await participant.save();
+			res.json(removedEvents);
 		} catch (e) {
 			return res.status(400).json({ message: 'DB Error', e});
 		}

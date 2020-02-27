@@ -11,5 +11,7 @@ router.delete('/:id', ParticipantController.remove);
 router.post('/filter', ParticipantController.filter);
 
 router.post('/:id/event', ParticipantController.addEvents);
+router.get('/:id/event', ParticipantController.getEvents);
+router.put('/:id/event', ParticipantController.removeEvents);
 
 module.exports = router;
