@@ -73,8 +73,10 @@ const ParticipantController = {
 		const id = req.body._id;
 
 		try {
-			const count = await Participant.updateOne({ _id: id }, updates);
-			return res.json(count);
+			const participant = await Participant.findByIdAndUpdate(id, updates);
+			if (participant)
+				return res.json(participant);
+			return res.status(404).json({ message: 'No such participant exists'});
 		} catch (e) {
 			return res.status(400).json({ message: 'DB Error', e});
 		}
@@ -89,14 +91,10 @@ const ParticipantController = {
 		const { id } = req.params;
 
 		try {
-			const exists = await Participant.exists({ _id: id });
-
-			if (exists) {
-				const deleted = await Participant.deleteOne({ _id: id });
-				return res.json(deleted);
-			} else {
-				return res.status(400).json({ message: 'No such participant exists' });
-			}
+			const participant = await Participant.findByIdAndRemove(id);
+			if (participant)
+				return res.json(participant);
+			return res.status(404).json({ message: 'No such participant exists' });
 		} catch (e) {
 			return res.status(400).json({ message: 'DB Error', e});
 		}

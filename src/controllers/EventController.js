@@ -69,8 +69,10 @@ const EventController = {
 		const id = req.body._id;
 
 		try {
-			const count = await Event.updateOne({ _id: id }, updates);
-			return res.json(count);
+			const event = await Event.findByIdAndUpdate(id, updates);
+			if (event)
+				return res.json(event);
+			return res.status(404).json({ message: 'No such event exists'});
 		} catch (e) {
 			return res.status(400).json({ message: 'DB Error', e});
 		}
@@ -85,14 +87,10 @@ const EventController = {
 		const { id } = req.params;
 
 		try {
-			const exists = await Event.exists({ _id: id });
-
-			if (exists) {
-				const deleted = await Event.deleteOne({ _id: id });
-				return res.json(deleted);
-			} else {
-				return res.status(400).json({ message: 'No such event exists' });
-			}
+			const event = await Event.findByIdAndRemove(id);
+			if (event)
+				return res.json(event);
+			return res.status(404).json({ message: 'No such event exists' });
 		} catch (e) {
 			return res.status(400).json({ message: 'DB Error', e});
 		}

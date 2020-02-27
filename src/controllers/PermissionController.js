@@ -69,8 +69,10 @@ const PermissionController = {
 		const id = req.body._id;
 
 		try {
-			const count = await Permission.updateOne({ _id: id }, updates);
-			return res.json(count);
+			const permission = await Permission.findByIdAndUpdate(id, updates);
+			if (permission)
+				return res.json(permission);
+			return res.status(404).json({ message: 'No such permission exists'});
 		} catch (e) {
 			return res.status(400).json({ message: 'DB Error', e});
 		}
@@ -88,8 +90,10 @@ const PermissionController = {
 			const exists = await Permission.exists({ _id: id });
 
 			if (exists) {
-				const deleted = await Permission.deleteOne({ _id: id });
-				return res.json(deleted);
+				const permission = await Permission.findByIdAndRemove(id);
+				if (permission)
+					return res.json(permission);
+				return res.status(404).json({ message: 'No such permission exists' });
 			} else {
 				return res.status(400).json({ message: 'No such permission exists' });
 			}

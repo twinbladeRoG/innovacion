@@ -68,8 +68,10 @@ const GroupController = {
 		const id = req.body._id;
 
 		try {
-			const count = await Group.updateOne({ _id: id }, updates);
-			return res.json(count);
+			const group = await Group.findByIdAndUpdate(id, updates);
+			if (group)
+				return res.json(group);
+			return res.status(404).json({ message: 'No such group exists'});
 		} catch (e) {
 			return res.status(400).json({ message: 'DB Error', e});
 		}
@@ -84,14 +86,10 @@ const GroupController = {
 		const { id } = req.params;
 
 		try {
-			const exists = await Group.exists({ _id: id });
-
-			if (exists) {
-				const deleted = await Group.deleteOne({ _id: id });
-				return res.json(deleted);
-			} else {
-				return res.status(400).json({ message: 'No such group exists' });
-			}
+			const group = await Group.findByIdAndRemove(id);
+			if (group)
+				return res.json(group);
+			return res.status(404).json({ message: 'No such group exists' });
 		} catch (e) {
 			return res.status(400).json({ message: 'DB Error', e});
 		}

@@ -9,8 +9,8 @@ dotenv.config();
 const port = process.env.PORT || 5000;
 const env = process.env.NODE_ENV || 'production';
 
-mongoose.connect('mongodb://localhost/innovacion', {
-	useNewUrlParser: true, useUnifiedTopology: true
+mongoose.connect(process.env.DB_CONN_STR, {
+	useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false
 });
 
 const app = express();

@@ -70,8 +70,10 @@ const VariableController = {
 		const id = req.body._id;
 
 		try {
-			const count = await Variable.updateOne({ _id: id }, updates);
-			return res.json(count);
+			const variable = await Variable.findByIdAndUpdate(id, updates);
+			if (variable)
+				return res.json(variable);
+			return res.status(404).json({ message: 'No such variable exists'});
 		} catch (e) {
 			return res.status(400).json({ message: 'DB Error', e});
 		}
@@ -86,14 +88,10 @@ const VariableController = {
 		const { id } = req.params;
 
 		try {
-			const exists = await Variable.exists({ _id: id });
-
-			if (exists) {
-				const deleted = await Variable.deleteOne({ _id: id });
-				return res.json(deleted);
-			} else {
-				return res.status(400).json({ message: 'No such variable exists' });
-			}
+			const variable = await Variable.findByIdAndRemove(id);
+			if (variable)
+				return res.json(variable);
+			return res.status(404).json({ message: 'No such variable exists' });
 		} catch (e) {
 			return res.status(400).json({ message: 'DB Error', e});
 		}

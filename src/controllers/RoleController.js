@@ -68,8 +68,10 @@ const RoleController = {
 		const id = req.body._id;
 
 		try {
-			const count = await Role.updateOne({ _id: id }, updates);
-			return res.json(count);
+			const role = await Role.findByIdAndUpdate(id, updates);
+			if (role)
+				return res.json(role);
+			return res.status(404).json({ message: 'No such role exists'});
 		} catch (e) {
 			return res.status(400).json({ message: 'DB Error', e});
 		}
@@ -84,14 +86,10 @@ const RoleController = {
 		const { id } = req.params;
 
 		try {
-			const exists = await Role.exists({ _id: id });
-
-			if (exists) {
-				const deleted = await Role.deleteOne({ _id: id });
-				return res.json(deleted);
-			} else {
-				return res.status(400).json({ message: 'No such role exists' });
-			}
+			const role = await Role.findByIdAndRemove(id);
+			if (role)
+				return res.json(role);
+			return res.status(404).json({ message: 'No such role exists' });
 		} catch (e) {
 			return res.status(400).json({ message: 'DB Error', e});
 		}

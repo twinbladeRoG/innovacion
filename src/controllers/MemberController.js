@@ -71,8 +71,10 @@ const MemberController = {
 		const id = req.body._id;
 
 		try {
-			const count = await Member.updateOne({ _id: id }, updates);
-			return res.json(count);
+			const member = await Member.findByIdAndUpdate(id, updates);
+			if (member)
+				return res.json(member);
+			return res.status(404).json({ message: 'No such member exists'});
 		} catch (e) {
 			return res.status(400).json({ message: 'DB Error', e});
 		}
@@ -87,14 +89,10 @@ const MemberController = {
 		const { id } = req.params;
 
 		try {
-			const exists = await Member.exists({ _id: id });
-
-			if (exists) {
-				const deleted = await Member.deleteOne({ _id: id });
-				return res.json(deleted);
-			} else {
-				return res.status(400).json({ message: 'No such member exists' });
-			}
+			const member = await Member.findByIdAndRemove(id);
+			if (member)
+				return res.json(member);
+			return res.status(404).json({ message: 'No such member exists' });
 		} catch (e) {
 			return res.status(400).json({ message: 'DB Error', e});
 		}
