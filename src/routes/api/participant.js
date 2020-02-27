@@ -14,4 +14,8 @@ router.post('/:id/event', ParticipantController.addEvents);
 router.get('/:id/event', ParticipantController.getEvents);
 router.put('/:id/event', ParticipantController.removeEvents);
 
+router.post('/:id/group', ParticipantController.addGroups);
+router.get('/:id/group', ParticipantController.getGroups);
+router.put('/:id/group', ParticipantController.removeGroups);
+
 module.exports = router;

@@ -1,6 +1,7 @@
 const log = require('../middlewares/logger');
 const Participant = require('../models/Participant');
-const { ObjectId } = require('mongoose').Types;
+const Event = require('../models/Event');
+const Group = require('../models/Group');
 
 const ParticipantController = {
 	/**
@@ -134,12 +135,17 @@ const ParticipantController = {
 
 		try {
 			const participant = await Participant.findById(id, { events: 1 });
+			if (!participant)
+				return res.status(404).json({ message: 'No such participant exists'});
+
 			events.forEach(event => {
 				if (!participant.events.includes(event))
 					participant.events.push(event);
 			});
 			await participant.save();
-			return res.json(participant.events);
+			return res.json(
+				await Event.find({ _id: { $in: participant.events }})
+			);
 		} catch (e) {
 			return res.status(400).json({ message: 'DB Error', e});
 		}
@@ -154,8 +160,11 @@ const ParticipantController = {
 		const { id } = req.params;
 
 		try {
-			const participants = await Participant.findById(id, { events: 1 }).populate('events');
-			res.json(participants.events);
+			const participant = await Participant.findById(id, { events: 1 }).populate('events');
+			if (!participant)
+				return res.status(404).json({ message: 'No such participant exists'});
+
+			res.json(participant.events);
 		} catch (e) {
 			return res.status(400).json({ message: 'DB Error', e});
 		}
@@ -173,6 +182,9 @@ const ParticipantController = {
 
 		try {
 			const participant = await Participant.findById(id, { events: 1 });
+			if (!participant)
+				return res.status(404).json({ message: 'No such participant exists'});
+
 			let removedEvents = [];
 			events.forEach(event => {
 				if (participant.events.includes(event))
@@ -180,6 +192,79 @@ const ParticipantController = {
 			});
 			await participant.save();
 			res.json(removedEvents);
+		} catch (e) {
+			return res.status(400).json({ message: 'DB Error', e});
+		}
+	},
+
+	/**
+   * @url /api/participant/:id/group
+   * @method POST
+   * @description Add Groups to a Participant
+   */
+	addGroups: async (req, res) => {
+		const { groups } = req.body;
+		const { id } = req.params;
+
+		try {
+			const participant = await Participant.findById(id, { groups: 1 });
+			if (!participant)
+				return res.status(404).json({ message: 'No such participant exists'});
+
+			groups.forEach(group => {
+				if (!participant.groups.includes(group))
+					participant.groups.push(group);
+			});
+			await participant.save();
+			return res.json(
+				await Group.find({ _id: { $in: participant.groups }})
+			);
+		} catch (e) {
+			return res.status(400).json({ message: 'DB Error', e});
+		}
+	},
+
+	/**
+   * @url /api/participant/:id/group
+   * @method GET
+   * @description Get Groups of a Participant
+   */
+	getGroups: async (req, res) => {
+		const { id } = req.params;
+
+		try {
+			const participant = await Participant.findById(id, { groups: 1 }).populate('groups');
+			if (!participant)
+				return res.status(404).json({ message: 'No such participant exists'});
+
+			res.json(participant.groups);
+		} catch (e) {
+			return res.status(400).json({ message: 'DB Error', e});
+		}
+	},
+
+	/**
+	 * @url /api/participant/:id/group
+	 * @method PUT
+	 * @description Remove Groups of a Participants
+	 */
+	removeGroups: async (req, res) => {
+		const { id } = req.params;
+		let { groups } = req.body;
+		// groups = groups.map(group => ObjectId(group));
+
+		try {
+			const participant = await Participant.findById(id, { groups: 1 });
+			if (!participant)
+				return res.status(404).json({ message: 'No such participant exists'});
+
+			let removedGroups = [];
+			groups.forEach(group => {
+				if (participant.groups.includes(group))
+					removedGroups.push(...participant.groups.splice(participant.groups.indexOf(group), 1));
+			});
+			await participant.save();
+			res.json(removedGroups);
 		} catch (e) {
 			return res.status(400).json({ message: 'DB Error', e});
 		}
