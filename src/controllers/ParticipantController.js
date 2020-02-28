@@ -211,10 +211,17 @@ const ParticipantController = {
 			if (!participant)
 				return res.status(404).json({ message: 'No such participant exists' });
 
-			groups.forEach(group => {
-				if (!participant.groups.includes(group))
+			for (const group of groups) {
+				if (!participant.groups.includes(group)) {
+					let currentGroup = await Group.findById(group, { participants: 1 });
+					if (!currentGroup.participants.includes(participant._id)) {
+						currentGroup.participants.push(participant._id);
+						await currentGroup.save();
+					}
 					participant.groups.push(group);
-			});
+				}
+			}
+
 			await participant.save();
 			return res.json(
 				await Group.find({ _id: { $in: participant.groups }})
@@ -250,8 +257,7 @@ const ParticipantController = {
 	 */
 	removeGroups: async (req, res) => {
 		const { id } = req.params;
-		let { groups } = req.body;
-		// groups = groups.map(group => ObjectId(group));
+		const { groups } = req.body;
 
 		try {
 			const participant = await Participant.findById(id, { groups: 1 });
@@ -259,10 +265,16 @@ const ParticipantController = {
 				return res.status(404).json({ message: 'No such participant exists' });
 
 			let removedGroups = [];
-			groups.forEach(group => {
-				if (participant.groups.includes(group))
+			for (const group of groups) {
+				if (participant.groups.includes(group)) {
+					let currentGroup = await Group.findById(group, { participants: 1 });
+					if (currentGroup.participants.includes(participant._id)) {
+						currentGroup.participants.splice(currentGroup.participants.indexOf(participant._id), 1);
+						await currentGroup.save();
+					}
 					removedGroups.push(...participant.groups.splice(participant.groups.indexOf(group), 1));
-			});
+				}
+			}
 			await participant.save();
 			res.json(removedGroups);
 		} catch (e) {
