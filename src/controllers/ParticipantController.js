@@ -3,6 +3,7 @@ const Participant = require('../models/Participant');
 const Event = require('../models/Event');
 const Group = require('../models/Group');
 const HttpError = require('../errors/HttpError');
+const { validationResult } = require('express-validator');
 
 const ParticipantController = {
   /**
@@ -10,12 +11,12 @@ const ParticipantController = {
    * @method GET
    * @description Get all Participants
    */
-  getAll: async (req, res) => {
+  getAll: async (req, res, next) => {
     try {
       const participants = await Participant.find();
       return res.json(participants);
     } catch (e) {
-      return res.status(500).json({ message: 'DB Error', e });
+      next(e);
     }
   },
 
@@ -26,8 +27,13 @@ const ParticipantController = {
    */
   getById: async (req, res, next) => {
     const { id } = req.params;
+    const { errors } = validationResult(req);
 
     try {
+      errors.forEach(({ msg }) => {
+        throw new HttpError(msg, 400);
+      });
+
       const participant = await Participant.findById(id);
       if (!participant)
         throw new HttpError(`No participant found with id: ${id}`, 404);
@@ -42,29 +48,36 @@ const ParticipantController = {
    * @method POST
    * @description Create a Particpant
    */
-  create: async (req, res) => {
-    const { first_name, last_name, contact, email, institute } = req.body;
-
+  create: async (req, res, next) => {
     try {
+      const { errors } = validationResult(req);
+
+      errors.forEach(({ msg }) => {
+        throw new HttpError(msg, 400);
+      });
+
+      const { first_name, last_name, contact, email, institute } = req.body;
+
       const exists = await Participant.exists({ email });
 
-      if (exists) {
-        return res
-          .status(400)
-          .json({ message: 'Participant with same email already exists!' });
-      } else {
-        const participant = new Participant({
-          first_name,
-          last_name,
-          contact,
-          email,
-          institute
-        });
-        await participant.save();
-        return res.json(participant);
-      }
+      if (exists)
+        throw new HttpError(
+          `Participant with email ${email} already exists!`,
+          400
+        );
+
+      const participant = new Participant({
+        first_name,
+        last_name,
+        contact,
+        email,
+        institute
+      });
+      await participant.save();
+
+      return res.json(participant);
     } catch (e) {
-      return res.status(500).json({ message: 'DB Error', e });
+      next(e);
     }
   },
 
@@ -73,7 +86,7 @@ const ParticipantController = {
    * @method PUT
    * @description Update a Participant by Id
    */
-  update: async (req, res) => {
+  update: async (req, res, next) => {
     const updates = {};
     if ('first_name' in req.body) updates.first_name = req.body.first_name;
     if ('last_name' in req.body) updates.last_name = req.body.last_name;
@@ -88,7 +101,7 @@ const ParticipantController = {
       if (participant) return res.json(participant);
       return res.status(404).json({ message: 'No such participant exists' });
     } catch (e) {
-      return res.status(400).json({ message: 'DB Error', e });
+      next(e);
     }
   },
 
@@ -97,7 +110,7 @@ const ParticipantController = {
    * @method DELETE
    * @description Delete a Partcipant by Id
    */
-  remove: async (req, res) => {
+  remove: async (req, res, next) => {
     const { id } = req.params;
 
     try {
@@ -105,7 +118,7 @@ const ParticipantController = {
       if (participant) return res.json(participant);
       return res.status(404).json({ message: 'No such participant exists' });
     } catch (e) {
-      return res.status(400).json({ message: 'DB Error', e });
+      next(e);
     }
   },
 
@@ -114,7 +127,7 @@ const ParticipantController = {
    * @method POST
    * @description Filter out Participants based on search parameters
    */
-  filter: async (req, res) => {
+  filter: async (req, res, next) => {
     const filter = {};
     if ('first_name' in req.body) filter.first_name = req.body.first_name;
     if ('last_name' in req.body) filter.last_name = req.body.last_name;
@@ -127,7 +140,7 @@ const ParticipantController = {
       log.info(`${participants.length} found!`);
       return res.json(participants);
     } catch (e) {
-      res.status(500).json({ message: 'DB Error', e });
+      next(e);
     }
   },
 
@@ -136,7 +149,7 @@ const ParticipantController = {
    * @method POST
    * @description Add Events to a Participant
    */
-  addEvents: async (req, res) => {
+  addEvents: async (req, res, next) => {
     const { events } = req.body;
     const { id } = req.params;
 
@@ -151,7 +164,7 @@ const ParticipantController = {
       await participant.save();
       return res.json(await Event.find({ _id: { $in: participant.events } }));
     } catch (e) {
-      return res.status(400).json({ message: 'DB Error', e });
+      next(e);
     }
   },
 
@@ -160,7 +173,7 @@ const ParticipantController = {
    * @method GET
    * @description Get Events of a Participant
    */
-  getEvents: async (req, res) => {
+  getEvents: async (req, res, next) => {
     const { id } = req.params;
 
     try {
@@ -172,7 +185,7 @@ const ParticipantController = {
 
       res.json(participant.events);
     } catch (e) {
-      return res.status(400).json({ message: 'DB Error', e });
+      next(e);
     }
   },
 
@@ -181,7 +194,7 @@ const ParticipantController = {
    * @method PUT
    * @description Remove Events of a Participants
    */
-  removeEvents: async (req, res) => {
+  removeEvents: async (req, res, next) => {
     const { id } = req.params;
     let { events } = req.body;
     // events = events.map(event => ObjectId(event));
@@ -201,7 +214,7 @@ const ParticipantController = {
       await participant.save();
       res.json(removedEvents);
     } catch (e) {
-      return res.status(400).json({ message: 'DB Error', e });
+      next(e);
     }
   },
 
@@ -210,7 +223,7 @@ const ParticipantController = {
    * @method POST
    * @description Add Groups to a Participant
    */
-  addGroups: async (req, res) => {
+  addGroups: async (req, res, next) => {
     const { groups } = req.body;
     const { id } = req.params;
 
@@ -233,7 +246,7 @@ const ParticipantController = {
       await participant.save();
       return res.json(await Group.find({ _id: { $in: participant.groups } }));
     } catch (e) {
-      return res.status(400).json({ message: 'DB Error', e });
+      next(e);
     }
   },
 
@@ -242,7 +255,7 @@ const ParticipantController = {
    * @method GET
    * @description Get Groups of a Participant
    */
-  getGroups: async (req, res) => {
+  getGroups: async (req, res, next) => {
     const { id } = req.params;
 
     try {
@@ -254,7 +267,7 @@ const ParticipantController = {
 
       res.json(participant.groups);
     } catch (e) {
-      return res.status(400).json({ message: 'DB Error', e });
+      next(e);
     }
   },
 
@@ -263,7 +276,7 @@ const ParticipantController = {
    * @method PUT
    * @description Remove Groups of a Participants
    */
-  removeGroups: async (req, res) => {
+  removeGroups: async (req, res, next) => {
     const { id } = req.params;
     const { groups } = req.body;
 
@@ -291,7 +304,7 @@ const ParticipantController = {
       await participant.save();
       res.json(removedGroups);
     } catch (e) {
-      return res.status(400).json({ message: 'DB Error', e });
+      next(e);
     }
   }
 };
