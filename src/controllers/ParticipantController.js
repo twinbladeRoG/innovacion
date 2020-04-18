@@ -5,27 +5,27 @@ const Group = require('../models/Group');
 const HttpError = require('../errors/HttpError');
 const { validationResult } = require('express-validator');
 
-const ParticipantController = {
+class ParticipantController {
   /**
    * @url /api/participant
    * @method GET
    * @description Get all Participants
    */
-  getAll: async (req, res, next) => {
+  static async getAll(req, res, next) {
     try {
       const participants = await Participant.find();
       return res.json(participants);
     } catch (e) {
       next(e);
     }
-  },
+  }
 
   /**
    * @url /api/participant/:id
    * @method GET
    * @description Get a Participant by Id
    */
-  getById: async (req, res, next) => {
+  static async getById(req, res, next) {
     const { id } = req.params;
     const { errors } = validationResult(req);
 
@@ -41,14 +41,14 @@ const ParticipantController = {
     } catch (e) {
       next(e);
     }
-  },
+  }
 
   /**
    * @url /api/participants
    * @method POST
    * @description Create a Particpant
    */
-  create: async (req, res, next) => {
+  static async create(req, res, next) {
     try {
       const { errors } = validationResult(req);
 
@@ -79,14 +79,14 @@ const ParticipantController = {
     } catch (e) {
       next(e);
     }
-  },
+  }
 
   /**
    * @url /api/participant
    * @method PUT
    * @description Update a Participant by Id
    */
-  update: async (req, res, next) => {
+  static async update(req, res, next) {
     const updates = {};
     if ('first_name' in req.body) updates.first_name = req.body.first_name;
     if ('last_name' in req.body) updates.last_name = req.body.last_name;
@@ -103,14 +103,14 @@ const ParticipantController = {
     } catch (e) {
       next(e);
     }
-  },
+  }
 
   /**
    * @url /api/participant/:id
    * @method DELETE
    * @description Delete a Partcipant by Id
    */
-  remove: async (req, res, next) => {
+  static async remove(req, res, next) {
     const { id } = req.params;
 
     try {
@@ -120,14 +120,14 @@ const ParticipantController = {
     } catch (e) {
       next(e);
     }
-  },
+  }
 
   /**
    * @url /api/participant/filter
    * @method POST
    * @description Filter out Participants based on search parameters
    */
-  filter: async (req, res, next) => {
+  static async filter(req, res, next) {
     const filter = {};
     if ('first_name' in req.body) filter.first_name = req.body.first_name;
     if ('last_name' in req.body) filter.last_name = req.body.last_name;
@@ -142,14 +142,14 @@ const ParticipantController = {
     } catch (e) {
       next(e);
     }
-  },
+  }
 
   /**
    * @url /api/participant/:id/event
    * @method POST
    * @description Add Events to a Participant
    */
-  addEvents: async (req, res, next) => {
+  static async addEvents(req, res, next) {
     const { events } = req.body;
     const { id } = req.params;
 
@@ -166,14 +166,14 @@ const ParticipantController = {
     } catch (e) {
       next(e);
     }
-  },
+  }
 
   /**
    * @url /api/participant/:id/event
    * @method GET
    * @description Get Events of a Participant
    */
-  getEvents: async (req, res, next) => {
+  static async getEvents(req, res, next) {
     const { id } = req.params;
 
     try {
@@ -187,14 +187,14 @@ const ParticipantController = {
     } catch (e) {
       next(e);
     }
-  },
+  }
 
   /**
    * @url /api/participant/:id/event
    * @method PUT
    * @description Remove Events of a Participants
    */
-  removeEvents: async (req, res, next) => {
+  static async removeEvents(req, res, next) {
     const { id } = req.params;
     let { events } = req.body;
     // events = events.map(event => ObjectId(event));
@@ -216,14 +216,14 @@ const ParticipantController = {
     } catch (e) {
       next(e);
     }
-  },
+  }
 
   /**
    * @url /api/participant/:id/group
    * @method POST
    * @description Add Groups to a Participant
    */
-  addGroups: async (req, res, next) => {
+  static async addGroups(req, res, next) {
     const { groups } = req.body;
     const { id } = req.params;
 
@@ -248,14 +248,14 @@ const ParticipantController = {
     } catch (e) {
       next(e);
     }
-  },
+  }
 
   /**
    * @url /api/participant/:id/group
    * @method GET
    * @description Get Groups of a Participant
    */
-  getGroups: async (req, res, next) => {
+  static async getGroups(req, res, next) {
     const { id } = req.params;
 
     try {
@@ -269,14 +269,14 @@ const ParticipantController = {
     } catch (e) {
       next(e);
     }
-  },
+  }
 
   /**
    * @url /api/participant/:id/group
    * @method PUT
    * @description Remove Groups of a Participants
    */
-  removeGroups: async (req, res, next) => {
+  static async removeGroups(req, res, next) {
     const { id } = req.params;
     const { groups } = req.body;
 
@@ -307,6 +307,6 @@ const ParticipantController = {
       next(e);
     }
   }
-};
+}
 
 module.exports = ParticipantController;
