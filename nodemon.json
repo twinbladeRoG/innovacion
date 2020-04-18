@@ -1,16 +1,7 @@
 {
   "restartable": "rs",
-  "ignore": [
-    ".git",
-    "node_modules/**/node_modules",
-    "logs/"
-  ],
+  "ignore": [".git", "node_modules/**/node_modules", "logs/"],
   "verbose": true,
-  "watch": [
-    "src/",
-    "app.js",
-    "package.json",
-    ".env"
-  ],
+  "watch": ["src/", "app.js", "package.json", ".env"],
   "ext": "js,json,env"
 }
