@@ -26,13 +26,13 @@ class ParticipantController {
    * @description Get a Participant by Id
    */
   static async getById(req, res, next) {
-    const { id } = req.params;
-    const { errors } = validationResult(req);
-
     try {
+      const { errors } = validationResult(req);
       errors.forEach(({ msg }) => {
         throw new HttpError(msg, 400);
       });
+
+      const { id } = req.params;
 
       const participant = await Participant.findById(id);
       if (!participant)
@@ -51,7 +51,6 @@ class ParticipantController {
   static async create(req, res, next) {
     try {
       const { errors } = validationResult(req);
-
       errors.forEach(({ msg }) => {
         throw new HttpError(msg, 400);
       });
@@ -87,19 +86,27 @@ class ParticipantController {
    * @description Update a Participant by Id
    */
   static async update(req, res, next) {
-    const updates = {};
-    if ('first_name' in req.body) updates.first_name = req.body.first_name;
-    if ('last_name' in req.body) updates.last_name = req.body.last_name;
-    if ('contact' in req.body) updates.contact = req.body.contact;
-    if ('email' in req.body) updates.email = req.body.email;
-    if ('institute' in req.body) updates.institute = req.body.institute;
-
-    const id = req.body._id;
-
     try {
-      const participant = await Participant.findByIdAndUpdate(id, updates);
-      if (participant) return res.json(participant);
-      return res.status(404).json({ message: 'No such participant exists' });
+      const { errors } = validationResult(req);
+      errors.forEach(({ msg }) => {
+        throw new HttpError(msg, 400);
+      });
+
+      const updates = {};
+      if ('first_name' in req.body) updates.first_name = req.body.first_name;
+      if ('last_name' in req.body) updates.last_name = req.body.last_name;
+      if ('contact' in req.body) updates.contact = req.body.contact;
+      if ('email' in req.body) updates.email = req.body.email;
+      if ('institute' in req.body) updates.institute = req.body.institute;
+
+      const { id } = req.params;
+
+      const participant = await Participant.findByIdAndUpdate(id, updates, {
+        new: true
+      });
+      if (!participant) throw new HttpError('No such participant exists', 404);
+
+      return res.json(participant);
     } catch (e) {
       next(e);
     }
@@ -111,12 +118,18 @@ class ParticipantController {
    * @description Delete a Partcipant by Id
    */
   static async remove(req, res, next) {
-    const { id } = req.params;
-
     try {
+      const { errors } = validationResult(req);
+      errors.forEach(({ msg }) => {
+        throw new HttpError(msg, 400);
+      });
+
+      const { id } = req.params;
       const participant = await Participant.findByIdAndRemove(id);
-      if (participant) return res.json(participant);
-      return res.status(404).json({ message: 'No such participant exists' });
+
+      if (!participant) throw new HttpError('No such participant exists', 400);
+
+      return res.json(participant);
     } catch (e) {
       next(e);
     }
@@ -128,16 +141,25 @@ class ParticipantController {
    * @description Filter out Participants based on search parameters
    */
   static async filter(req, res, next) {
-    const filter = {};
-    if ('first_name' in req.body) filter.first_name = req.body.first_name;
-    if ('last_name' in req.body) filter.last_name = req.body.last_name;
-    if ('contact' in req.body) filter.contact = req.body.contact;
-    if ('email' in req.body) filter.email = req.body.email;
-    if ('institute' in req.body) filter.institute = req.body.institute;
-
     try {
+      const { errors } = validationResult(req);
+      errors.forEach(({ msg }) => {
+        throw new HttpError(msg, 400);
+      });
+
+      const filter = {};
+      if ('first_name' in req.body)
+        filter.first_name = new RegExp(req.body.first_name, 'i');
+      if ('last_name' in req.body)
+        filter.last_name = new RegExp(req.body.last_name, 'i');
+      if ('contact' in req.body)
+        filter.contact = new RegExp(req.body.contact, 'i');
+      if ('email' in req.body) filter.email = new RegExp(req.body.email, 'i');
+      if ('institute' in req.body)
+        filter.institute = new RegExp(req.body.institute, 'i');
+
       const participants = await Participant.find(filter);
-      log.info(`${participants.length} found!`);
+      log.info(`Participants Found: ${participants.length}`);
       return res.json(participants);
     } catch (e) {
       next(e);

@@ -4,7 +4,9 @@ const { ParticipantController } = require('../../controllers');
 
 const {
   validateParticipantID,
-  validateParticipant
+  validateParticipant,
+  validateParticipantUpdate,
+  validateFilter
 } = require('../../validator/participant');
 
 /**
@@ -13,9 +15,9 @@ const {
 router.get('/', ParticipantController.getAll);
 router.get('/:id', validateParticipantID, ParticipantController.getById);
 router.post('/', validateParticipant, ParticipantController.create);
-router.put('/', ParticipantController.update);
-router.delete('/:id', ParticipantController.remove);
-router.post('/filter', ParticipantController.filter);
+router.put('/:id', validateParticipantUpdate, ParticipantController.update);
+router.delete('/:id', validateParticipantID, ParticipantController.remove);
+router.post('/filter', validateFilter, ParticipantController.filter);
 
 router.post('/:id/event', ParticipantController.addEvents);
 router.get('/:id/event', ParticipantController.getEvents);
