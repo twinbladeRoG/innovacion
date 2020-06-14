@@ -94,7 +94,7 @@ const EventController = {
     } catch (e) {
       return res.status(400).json({ message: 'DB Error', e });
     }
-  }
+  },
 };
 
 module.exports = EventController;

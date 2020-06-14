@@ -11,12 +11,12 @@ const Participant = model(
       institute: { type: String, required: true },
       events: {
         type: [{ type: Schema.Types.ObjectId, ref: 'Event' }],
-        select: false
+        select: false,
       },
       groups: {
         type: [{ type: Schema.Types.ObjectId, ref: 'Group' }],
-        select: false
-      }
+        select: false,
+      },
     },
     { timestamps: true }
   )

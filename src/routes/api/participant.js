@@ -6,7 +6,7 @@ const {
   validateParticipantID,
   validateParticipant,
   validateParticipantUpdate,
-  validateFilter
+  validateFilter,
 } = require('../../validator/participant');
 
 /**

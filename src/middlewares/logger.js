@@ -8,27 +8,27 @@ const logFormat = printf(({ level, message, timestamp }) => {
   let loglevel = '';
 
   switch (level) {
-  case 'ERROR':
-    loglevel = chalk.black.bgRed(` ${level} `);
-    break;
-  case 'WARN':
-    loglevel = chalk.black.bgYellow(` ${level} `);
-    break;
-  case 'INFO':
-    loglevel = chalk.black.bgBlue(` ${level} `);
-    break;
-  case 'HTTP':
-    loglevel = chalk.black.bgGreen(` ${level} `);
-    break;
-  case 'VERBOSE':
-    loglevel = chalk.black.bgMagenta(` ${level} `);
-    break;
-  case 'DEBUG':
-    loglevel = chalk.black.bgYellowBright(` ${level} `);
-    break;
-  default:
-    loglevel = ` ${level} `;
-    break;
+    case 'ERROR':
+      loglevel = chalk.black.bgRed(` ${level} `);
+      break;
+    case 'WARN':
+      loglevel = chalk.black.bgYellow(` ${level} `);
+      break;
+    case 'INFO':
+      loglevel = chalk.black.bgBlue(` ${level} `);
+      break;
+    case 'HTTP':
+      loglevel = chalk.black.bgGreen(` ${level} `);
+      break;
+    case 'VERBOSE':
+      loglevel = chalk.black.bgMagenta(` ${level} `);
+      break;
+    case 'DEBUG':
+      loglevel = chalk.black.bgYellowBright(` ${level} `);
+      break;
+    default:
+      loglevel = ` ${level} `;
+      break;
   }
 
   timestamp = moment(timestamp).format('DD-MMM-YYYY HH:mm:ss ZZ');
@@ -44,28 +44,28 @@ const options = {
     json: true,
     maxsize: 5242880, // 5MB
     maxFiles: 5,
-    colorize: false
+    colorize: false,
   },
   console: {
     level: 'debug',
     handleExceptions: true,
     timestamp,
-    format: combine(logFormat)
-  }
+    format: combine(logFormat),
+  },
 };
 
 const logger = new createLogger({
   transports: [
     new transports.File(options.file),
-    new transports.Console(options.console)
+    new transports.Console(options.console),
   ],
-  exitOnError: false // do not exit on handled exceptions
+  exitOnError: false, // do not exit on handled exceptions
 });
 
 logger.stream = {
-  write: function(message) {
+  write: function (message) {
     logger.info(message);
-  }
+  },
 };
 
 module.exports = logger;

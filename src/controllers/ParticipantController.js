@@ -70,7 +70,7 @@ class ParticipantController {
         last_name,
         contact,
         email,
-        institute
+        institute,
       });
       await participant.save();
 
@@ -102,7 +102,7 @@ class ParticipantController {
       const { id } = req.params;
 
       const participant = await Participant.findByIdAndUpdate(id, updates, {
-        new: true
+        new: true,
       });
       if (!participant) throw new HttpError('No such participant exists', 404);
 
@@ -200,7 +200,7 @@ class ParticipantController {
 
     try {
       const participant = await Participant.findById(id, {
-        events: 1
+        events: 1,
       }).populate('events');
       if (!participant)
         return res.status(404).json({ message: 'No such participant exists' });
@@ -282,7 +282,7 @@ class ParticipantController {
 
     try {
       const participant = await Participant.findById(id, {
-        groups: 1
+        groups: 1,
       }).populate('groups');
       if (!participant)
         return res.status(404).json({ message: 'No such participant exists' });

@@ -12,7 +12,7 @@ const VariableController = {
       const variables = await Variable.find();
       return res.json(variables);
     } catch (e) {
-      return res.status(500).json({ message: 'DB Error', e});
+      return res.status(500).json({ message: 'DB Error', e });
     }
   },
 
@@ -28,7 +28,7 @@ const VariableController = {
       const variables = await Variable.findById(id);
       return res.json(variables);
     } catch (e) {
-      return res.status(500).json({ message: 'DB Error', e});
+      return res.status(500).json({ message: 'DB Error', e });
     }
   },
 
@@ -44,7 +44,9 @@ const VariableController = {
       const exists = await Variable.exists({ key });
 
       if (exists) {
-        return res.status(400).json({ message: 'Variable with same key already exists!'});
+        return res
+          .status(400)
+          .json({ message: 'Variable with same key already exists!' });
       } else {
         const variable = new Variable({ key, value });
         await variable.save();
@@ -53,7 +55,7 @@ const VariableController = {
         return res.json(variable);
       }
     } catch (e) {
-      return res.status(500).json({ message: 'DB Error', e});
+      return res.status(500).json({ message: 'DB Error', e });
     }
   },
 
@@ -71,11 +73,10 @@ const VariableController = {
 
     try {
       const variable = await Variable.findByIdAndUpdate(id, updates);
-      if (variable)
-        return res.json(variable);
-      return res.status(404).json({ message: 'No such variable exists'});
+      if (variable) return res.json(variable);
+      return res.status(404).json({ message: 'No such variable exists' });
     } catch (e) {
-      return res.status(400).json({ message: 'DB Error', e});
+      return res.status(400).json({ message: 'DB Error', e });
     }
   },
 
@@ -89,13 +90,12 @@ const VariableController = {
 
     try {
       const variable = await Variable.findByIdAndRemove(id);
-      if (variable)
-        return res.json(variable);
+      if (variable) return res.json(variable);
       return res.status(404).json({ message: 'No such variable exists' });
     } catch (e) {
-      return res.status(400).json({ message: 'DB Error', e});
+      return res.status(400).json({ message: 'DB Error', e });
     }
-  }
+  },
 };
 
 module.exports = VariableController;

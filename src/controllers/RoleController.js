@@ -12,7 +12,7 @@ const RoleController = {
       const roles = await Role.find();
       return res.json(roles);
     } catch (e) {
-      return res.status(500).json({ message: 'DB Error', e});
+      return res.status(500).json({ message: 'DB Error', e });
     }
   },
 
@@ -28,7 +28,7 @@ const RoleController = {
       const roles = await Role.findById(id);
       return res.json(roles);
     } catch (e) {
-      return res.status(500).json({ message: 'DB Error', e});
+      return res.status(500).json({ message: 'DB Error', e });
     }
   },
 
@@ -44,7 +44,9 @@ const RoleController = {
       const exists = await Role.exists({ type });
 
       if (exists) {
-        return res.status(400).json({ message: 'Role with same type already exists!'});
+        return res
+          .status(400)
+          .json({ message: 'Role with same type already exists!' });
       } else {
         const role = new Role({ type });
         await role.save();
@@ -52,7 +54,7 @@ const RoleController = {
         return res.json(role);
       }
     } catch (e) {
-      return res.status(500).json({ message: 'DB Error', e});
+      return res.status(500).json({ message: 'DB Error', e });
     }
   },
 
@@ -69,11 +71,10 @@ const RoleController = {
 
     try {
       const role = await Role.findByIdAndUpdate(id, updates);
-      if (role)
-        return res.json(role);
-      return res.status(404).json({ message: 'No such role exists'});
+      if (role) return res.json(role);
+      return res.status(404).json({ message: 'No such role exists' });
     } catch (e) {
-      return res.status(400).json({ message: 'DB Error', e});
+      return res.status(400).json({ message: 'DB Error', e });
     }
   },
 
@@ -87,13 +88,12 @@ const RoleController = {
 
     try {
       const role = await Role.findByIdAndRemove(id);
-      if (role)
-        return res.json(role);
+      if (role) return res.json(role);
       return res.status(404).json({ message: 'No such role exists' });
     } catch (e) {
-      return res.status(400).json({ message: 'DB Error', e});
+      return res.status(400).json({ message: 'DB Error', e });
     }
-  }
+  },
 };
 
 module.exports = RoleController;

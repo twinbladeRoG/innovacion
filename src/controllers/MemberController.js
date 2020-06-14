@@ -12,7 +12,7 @@ const MemberController = {
       const members = await Member.find();
       return res.json(members);
     } catch (e) {
-      return res.status(500).json({ message: 'DB Error', e});
+      return res.status(500).json({ message: 'DB Error', e });
     }
   },
 
@@ -28,7 +28,7 @@ const MemberController = {
       const members = await Member.findById(id);
       return res.json(members);
     } catch (e) {
-      return res.status(500).json({ message: 'DB Error', e});
+      return res.status(500).json({ message: 'DB Error', e });
     }
   },
 
@@ -44,7 +44,9 @@ const MemberController = {
       const exists = await Member.exists({ email });
 
       if (exists) {
-        return res.status(400).json({ message: 'Member with same email already exists!'});
+        return res
+          .status(400)
+          .json({ message: 'Member with same email already exists!' });
       } else {
         const member = new Member({ first_name, last_name, contact, email });
         await member.save();
@@ -52,7 +54,7 @@ const MemberController = {
         return res.json(member);
       }
     } catch (e) {
-      return res.status(500).json({ message: 'DB Error', e});
+      return res.status(500).json({ message: 'DB Error', e });
     }
   },
 
@@ -72,11 +74,10 @@ const MemberController = {
 
     try {
       const member = await Member.findByIdAndUpdate(id, updates);
-      if (member)
-        return res.json(member);
-      return res.status(404).json({ message: 'No such member exists'});
+      if (member) return res.json(member);
+      return res.status(404).json({ message: 'No such member exists' });
     } catch (e) {
-      return res.status(400).json({ message: 'DB Error', e});
+      return res.status(400).json({ message: 'DB Error', e });
     }
   },
 
@@ -90,13 +91,12 @@ const MemberController = {
 
     try {
       const member = await Member.findByIdAndRemove(id);
-      if (member)
-        return res.json(member);
+      if (member) return res.json(member);
       return res.status(404).json({ message: 'No such member exists' });
     } catch (e) {
-      return res.status(400).json({ message: 'DB Error', e});
+      return res.status(400).json({ message: 'DB Error', e });
     }
-  }
+  },
 };
 
 module.exports = MemberController;

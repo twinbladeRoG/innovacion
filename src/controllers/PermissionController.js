@@ -100,7 +100,7 @@ const PermissionController = {
     } catch (e) {
       return res.status(400).json({ message: 'DB Error', e });
     }
-  }
+  },
 };
 
 module.exports = PermissionController;
